@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | MailFlow</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #16a34a;
+            --primary-dark: #15803d;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --background: #f8fafc;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Arial, sans-serif;
+
+            background:
+                radial-gradient(circle at 10% 10%, rgba(34, 197, 94, 0.12), transparent 30%),
+                radial-gradient(circle at 90% 90%, rgba(59, 130, 246, 0.10), transparent 30%),
+                #f8fafc;
+
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        /* Main */
+
+        .page {
+            width: 100%;
+            max-width: 1050px;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+
+            border-radius: 28px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 25px 70px rgba(15, 23, 42, 0.10),
+                0 5px 20px rgba(15, 23, 42, 0.04);
+
+            backdrop-filter: blur(20px);
+        }
+
+        /* Left */
+
+        .left {
+            position: relative;
+            padding: 55px;
+
+            background:
+                linear-gradient(145deg,
+                    #ecfdf5 0%,
+                    #f0fdf4 45%,
+                    #eff6ff 100%);
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            overflow: hidden;
+        }
+
+        .left::before {
+            content: "";
+            position: absolute;
+
+            width: 280px;
+            height: 280px;
+
+            border-radius: 50%;
+
+            background: rgba(34, 197, 94, 0.12);
+
+            top: -100px;
+            right: -100px;
+        }
+
+        .left::after {
+            content: "";
+            position: absolute;
+
+            width: 220px;
+            height: 220px;
+
+            border-radius: 50%;
+
+            background: rgba(59, 130, 246, 0.08);
+
+            bottom: -100px;
+            left: -80px;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: white;
+
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+
+            font-size: 20px;
+        }
+
+        .hero {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 80px;
+        }
+
+        .hero h2 {
+            font-size: 42px;
+            line-height: 1.1;
+
+            letter-spacing: -1.5px;
+
+            max-width: 430px;
+
+            margin-bottom: 20px;
+        }
+
+        .hero h2 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            max-width: 410px;
+
+            font-size: 16px;
+            line-height: 1.7;
+
+            color: #64748b;
+        }
+
+        .features {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 13px;
+
+            margin-top: 35px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: white;
+
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        }
+
+        /* Right */
+
+        .right {
+            padding: 55px 60px;
+
+            background: white;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            font-size: 30px;
+
+            letter-spacing: -0.8px;
+
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Form */
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+
+            font-size: 13px;
+            font-weight: 650;
+
+            margin-bottom: 8px;
+
+            color: #374151;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #9ca3af;
+
+            font-size: 17px;
+
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+
+            height: 50px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 11px;
+
+            padding: 0 15px 0 44px;
+
+            font-size: 14px;
+
+            color: var(--text);
+
+            background: #fff;
+
+            outline: none;
+
+            transition: all 0.2s ease;
+        }
+
+        input::placeholder {
+            color: #a1a1aa;
+        }
+
+        input:hover {
+            border-color: #d1d5db;
+        }
+
+        input:focus {
+            border-color: #22c55e;
+
+            box-shadow:
+                0 0 0 4px rgba(34, 197, 94, 0.10);
+        }
+
+        .password-toggle {
+            position: absolute;
+
+            right: 14px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            color: #9ca3af;
+
+            font-size: 17px;
+
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: #4b5563;
+        }
+
+        /* Password strength */
+
+        .password-strength {
+            display: flex;
+
+            gap: 4px;
+
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            height: 3px;
+
+            flex: 1;
+
+            border-radius: 5px;
+
+            background: #e5e7eb;
+
+            transition: 0.2s;
+        }
+
+        .strength-text {
+            font-size: 11px;
+
+            color: #9ca3af;
+
+            margin-top: 5px;
+        }
+
+        /* Terms */
+
+        .terms {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 9px;
+
+            margin: 5px 0 22px;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+            color: #6b7280;
+        }
+
+        .terms input {
+            width: 15px;
+            height: 15px;
+
+            margin-top: 2px;
+
+            padding: 0;
+
+            accent-color: var(--primary);
+        }
+
+        .terms a {
+            color: #15803d;
+
+            text-decoration: none;
+
+            font-weight: 600;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        /* Button */
+
+        .register-btn {
+            width: 100%;
+
+            height: 51px;
+
+            border: none;
+
+            border-radius: 11px;
+
+            background: linear-gradient(135deg,
+                    #16a34a,
+                    #15803d);
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 20px rgba(22, 163, 74, 0.20);
+
+            transition: all 0.2s ease;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 12px 25px rgba(22, 163, 74, 0.28);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Login */
+
+        .login {
+            text-align: center;
+
+            margin-top: 24px;
+
+            font-size: 13px;
+
+            color: #6b7280;
+        }
+
+        .login a {
+            color: #15803d;
+
+            font-weight: 700;
+
+            text-decoration: none;
+        }
+
+        .login a:hover {
+            text-decoration: underline;
+        }
+
+        /* Security */
+
+        .security {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 6px;
+
+            margin-top: 22px;
+
+            font-size: 11px;
+
+            color: #9ca3af;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 850px) {
+
+            .page {
+                grid-template-columns: 1fr;
+
+                max-width: 500px;
+            }
+
+            .left {
+                display: none;
+            }
+
+            .right {
+                padding: 45px 35px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .page {
+                border-radius: 20px;
+            }
+
+            .right {
+                padding: 35px 22px;
+            }
+
+            .form-header h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="page">
+
+        <!-- LEFT SIDE -->
+
+        <section class="left">
+
+            <div>
+
+                <div class="brand">
+
+                    <div class="brand-icon">
+                        📧
+                    </div>
+
+                    <span>MailFlow</span>
+
+                </div>
+
+
+                <div class="hero">
+
+                    <h2>
+                        Email notifications,
+                        <span>made simple.</span>
+                    </h2>
+
+                    <p>
+                        Connect your Gmail and WhatsApp once.
+                        We'll automatically deliver your important
+                        emails directly to WhatsApp.
+                    </p>
+
+
+                    <div class="features">
+
+                        <div class="feature">
+
+                            <div class="feature-icon">
+                                ✓
+                            </div>
+
+                            <span>Automatic email notifications</span>
+
+                        </div>
+
+
+                        <div class="feature">
+
+                            <div class="feature-icon">
+                                ⚡
+                            </div>
+
+                            <span>Fast WhatsApp delivery</span>
+
+                        </div>
+
+
+                        <div class="feature">
+
+                            <div class="feature-icon">
+                                🔒
+                            </div>
+
+                            <span>Secure account connections</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+
+        <section class="right">
+
+            <div class="form-header">
+
+                <h1>Create your account</h1>
+
+                <p>
+                    Start connecting your email with WhatsApp.
+                </p>
+
+            </div>
+
+
+            <form method="POST" action="/register">
+
+                <!-- NAME -->
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Full name
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            👤
+                        </span>
+
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" autocomplete="name"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            ✉
+                        </span>
+
+                        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+                        <input type="password" id="password" name="password" placeholder="Create a strong password"
+                            autocomplete="new-password" minlength="8" required>
+
+                        <button type="button" class="password-toggle" onclick="togglePassword()"
+                            aria-label="Show password">
+                            👁
+                        </button>
+
+                    </div>
+
+
+                    <div class="password-strength">
+
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+
+                    </div>
+
+                    <div class="strength-text" id="strengthText">
+                        Use at least 8 characters
+                    </div>
+
+                </div>
+
+
+                <!-- TERMS -->
+
+                <div class="terms">
+
+                    <input type="checkbox" id="terms" required>
+
+                    <label for="terms">
+
+                        I agree to the
+                        <a href="#">Terms of Service</a>
+                        and
+                        <a href="#">Privacy Policy</a>.
+
+                    </label>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <button type="submit" class="register-btn">
+                    Create account
+                </button>
+
+            </form>
+
+
+            <!-- LOGIN -->
+
+            <div class="login">
+
+                Already have an account?
+
+                <a href="/login">
+                    Sign in
+                </a>
+
+            </div>
+
+
+            <div class="security">
+
+                🔒 Your information is securely protected
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <script>
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const button =
+                document.querySelector(".password-toggle");
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                button.textContent = "🙈";
+
+            } else {
+
+                password.type = "password";
+
+                button.textContent = "👁";
+
+            }
+
+        }
+
+
+        const password =
+            document.getElementById("password");
+
+        const bars =
+            document.querySelectorAll(".strength-bar");
+
+        const strengthText =
+            document.getElementById("strengthText");
+
+
+        password.addEventListener("input", function () {
+
+            const value = password.value;
+
+            let strength = 0;
+
+
+            if (value.length >= 8)
+                strength++;
+
+            if (/[A-Z]/.test(value))
+                strength++;
+
+            if (/[0-9]/.test(value))
+                strength++;
+
+            if (/[^A-Za-z0-9]/.test(value))
+                strength++;
+
+
+            bars.forEach(function (bar, index) {
+
+                bar.style.background =
+                    index < strength
+                        ? "#22c55e"
+                        : "#e5e7eb";
+
+            });
+
+
+            if (value.length === 0) {
+
+                strengthText.textContent =
+                    "Use at least 8 characters";
+
+            } else if (strength === 1) {
+
+                strengthText.textContent =
+                    "Weak password";
+
+            } else if (strength === 2) {
+
+                strengthText.textContent =
+                    "Fair password";
+
+            } else if (strength === 3) {
+
+                strengthText.textContent =
+                    "Good password";
+
+            } else {
+
+                strengthText.textContent =
+                    "Strong password ✓";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email to WhatsApp Notification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Meta Facebook SDK: Embedded Signup uses Facebook Login for Business. -->
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: {{ meta_app_id| tojson }},
+        cookie: true,
+            xfbml: true,
+                version: "v26.0"
+            });
+        };
+    </script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+    <style>
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .cards {
+            margin-bottom: 30px;
+        }
+
+        .user-panel {
+            margin: 22px 0 30px;
+            padding: 14px 16px 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background: rgba(255, 255, 255, .94);
+            border: 1px solid rgba(226, 232, 240, .95);
+            border-radius: 18px;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, .06);
+            backdrop-filter: blur(12px);
+            transition: all .25s ease;
+        }
+
+        .user-panel:hover {
+            box-shadow: 0 12px 35px rgba(15, 23, 42, .08);
+            border-color: #dbe3ef;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            min-width: 0;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #eef4ff, #e5efff);
+            border: 1px solid #dbe7ff;
+            color: #2563eb;
+            font-size: 20px;
+            box-shadow: 0 5px 14px rgba(37, 99, 235, .10);
+        }
+
+        .user-details {
+            min-width: 0;
+        }
+
+        .user-details strong {
+            display: block;
+            color: #172033;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .user-details span {
+            display: block;
+            color: #718096;
+            font-size: 12.5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 360px;
+        }
+
+        .logout-button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            min-width: 108px;
+            padding: 10px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #475569;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            font-size: 13px;
+            font-weight: 650;
+            cursor: pointer;
+            overflow: hidden;
+            transition: color .2s, background .2s, border-color .2s, transform .2s, box-shadow .2s;
+            flex-shrink: 0;
+        }
+
+        .logout-button:hover {
+            color: #dc2626;
+            background: #fff7f7;
+            border-color: #fecaca;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(220, 38, 38, .10);
+        }
+
+        .logout-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #f8fafc;
+            font-size: 15px;
+        }
+
+        .gmail-connect-section,
+        .gmail-connected-section,
+        .whatsapp-connect-section {
+            margin: 28px 0 32px;
+            padding: 28px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #fff, #f8faff);
+            border: 1px solid #e7eaf0;
+            box-shadow: 0 12px 35px rgba(30, 40, 70, .06);
+        }
+
+        .gmail-connect-content,
+        .whatsapp-connect-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .gmail-connect-left,
+        .whatsapp-connect-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            min-width: 0;
+        }
+
+        .gmail-connect-icon,
+        .whatsapp-connect-icon {
+            width: 58px;
+            height: 58px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            font-size: 28px;
+        }
+
+        .gmail-connect-icon {
+            background: #fff0f0;
+        }
+
+        .whatsapp-connect-icon {
+            background: #ecfdf5;
+        }
+
+        .gmail-connect-left h2,
+        .whatsapp-connect-left h2 {
+            margin: 0 0 6px;
+            color: #1f2937;
+        }
+
+        .gmail-connect-left p,
+        .whatsapp-connect-left p {
+            margin: 0;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .gmail-connect-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #fff;
+            background: #1a73e8;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all .2s ease;
+            box-shadow: 0 8px 20px rgba(26, 115, 232, .20);
+            flex-shrink: 0;
+        }
+
+        .gmail-connect-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(26, 115, 232, .28);
+        }
+
+        .gmail-connect-note,
+        .whatsapp-connect-note {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #edf0f4;
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .gmail-connected-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .gmail-account-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        .gmail-account-icon,
+        .whatsapp-account-icon {
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            font-size: 27px;
+        }
+
+        .gmail-account-icon {
+            background: #fff0f0;
+        }
+
+        .whatsapp-account-icon {
+            background: #ecfdf5;
+        }
+
+        .gmail-account-text h2,
+        .whatsapp-account-text h2 {
+            margin: 0 0 5px;
+            color: #1f2937;
+            font-size: 20px;
+        }
+
+        .gmail-account-text p,
+        .whatsapp-account-text p {
+            margin: 0;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .gmail-email {
+            margin-top: 5px !important;
+            color: #334155 !important;
+            font-weight: 650;
+            word-break: break-all;
+        }
+
+        .connected-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 13px;
+            border-radius: 999px;
+            background: #e9fbf3;
+            color: #059669;
+            border: 1px solid #c9f3df;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .connected-pill .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .reconnect-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 15px;
+            border-radius: 11px;
+            text-decoration: none;
+            color: #2563eb;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            font-size: 12.5px;
+            font-weight: 650;
+            transition: all .2s ease;
+            white-space: nowrap;
+        }
+
+        .reconnect-button:hover {
+            background: #dbeafe;
+            transform: translateY(-1px);
+        }
+
+        /* WhatsApp number form */
+        .whatsapp-number-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .phone-input-group {
+            display: flex;
+            align-items: center;
+            width: 340px;
+            height: 46px;
+            background: #fff;
+            border: 1px solid #dbe3ef;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all .2s ease;
+        }
+
+        .phone-input-group:focus-within {
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, .10);
+        }
+
+        .country-code-select {
+            height: 100%;
+            width: 105px;
+            padding: 0 8px 0 12px;
+            border: 0;
+            border-right: 1px solid #e2e8f0;
+            outline: none;
+            background: #f8fafc;
+            color: #172033;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .whatsapp-number-input {
+            width: auto;
+            min-width: 0;
+            flex: 1;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 0 14px;
+            border: 0;
+            outline: none;
+            background: #fff;
+            color: #172033;
+            font-size: 14px;
+            letter-spacing: .2px;
+        }
+
+        .whatsapp-number-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .whatsapp-number-input {
+            width: 230px;
+            padding: 13px 15px;
+            border: 1px solid #dbe3ef;
+            border-radius: 12px;
+            outline: none;
+            background: #fff;
+            color: #172033;
+            font-size: 14px;
+            transition: all .2s ease;
+        }
+
+        .whatsapp-number-input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, .10);
+        }
+
+        .whatsapp-connect-button {
+            border: 0;
+            padding: 13px 18px;
+            border-radius: 12px;
+            color: #fff;
+            background: #059669;
+            font-size: 14px;
+            font-weight: 650;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 8px 20px rgba(5, 150, 105, .18);
+            transition: all .2s ease;
+        }
+
+        .whatsapp-connect-button:hover {
+            background: #047857;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(5, 150, 105, .24);
+        }
+
+        .whatsapp-help {
+            margin-top: 8px !important;
+            font-size: 12px !important;
+            color: #94a3b8 !important;
+        }
+
+        .stats-cards,
+        .automation,
+        .activity {
+            margin-bottom: 30px;
+        }
+
+        @media (max-width:700px) {
+            .user-panel {
+                align-items: flex-start;
+            }
+
+            .gmail-connect-content,
+            .whatsapp-connect-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .gmail-connect-button,
+            .whatsapp-number-form {
+                width: 100%;
+            }
+
+            .phone-input-group {
+                width: 100%;
+            }
+
+            .whatsapp-number-input {
+                width: auto;
+                box-sizing: border-box;
+            }
+
+            .whatsapp-connect-button {
+                flex: 1;
+            }
+
+            .whatsapp-number-form {
+                display: flex;
+            }
+
+            .user-details span {
+                max-width: 240px;
+            }
+
+            .gmail-connected-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width:480px) {
+            .user-panel {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+
+            .user-info {
+                width: 100%;
+            }
+
+            .user-details span {
+                max-width: 100%;
+            }
+
+            .logout-button {
+                width: 100%;
+            }
+
+            .whatsapp-number-form {
+                flex-direction: column;
+            }
+
+            .phone-input-group {
+                width: 100%;
+            }
+
+            .whatsapp-connect-button {
+                width: 100%;
+            }
+        }
+
+        .whatsapp-signup-status {
+            display: none;
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.45;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .whatsapp-signup-status.show {
+            display: block;
+        }
+
+        .whatsapp-signup-status.success {
+            background: #ecfdf5;
+            border-color: #bbf7d0;
+            color: #047857;
+        }
+
+        .whatsapp-signup-status.error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        {% if request.args.get("whatsapp_error") %}
+        <div
+            style="margin: 18px 0; padding: 14px 16px; border-radius: 10px; background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239;">
+            <strong>WhatsApp connection failed:</strong> {{ request.args.get("whatsapp_error") }}
+        </div>
+        {% endif %}
+
+
+        <header class="header">
+            <div>
+                <h1>📧 Email to WhatsApp Notification System</h1>
+                <p>Automatic Email Notification System</p>
+            </div>
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+        </header>
+
+        <!-- USER ACCOUNT -->
+        <div class="user-panel">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div class="user-details">
+                    <strong>{{ session.get("user_name", "User") }}</strong>
+                    <span>{{ session.get("user_email", "Email not available") }}</span>
+                </div>
+            </div>
+
+            <a href="{{ url_for('logout') }}" class="logout-button" title="Logout from your account">
+                <span class="logout-icon">↪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+
+        <!-- API CARDS -->
+        <section class="cards">
+
+            <a href="{{ url_for('connect_gmail') }}" style="text-decoration:none;color:inherit;">
+                <div class="card">
+                    <div class="card-icon gmail">📧</div>
+                    <div>
+                        <h3>Gmail API</h3>
+                        {% if gmail_connection %}
+                        <p>{{ gmail_connection.get("google_email", "Gmail Connected") }}</p>
+                        {% else %}
+                        <p>Connect your Gmail</p>
+                        {% endif %}
+                    </div>
+                    <span class="check">
+                        {% if gmail_connection %}✓{% else %}→{% endif %}
+                    </span>
+                </div>
+            </a>
+
+            <div class="card">
+                <div class="card-icon whatsapp">💬</div>
+                <div>
+                    <h3>WhatsApp API</h3>
+                    {% if whatsapp_connection %}
+                    <p>{{ whatsapp_connection.get("phone_number", "Connected") }}</p>
+                    {% else %}
+                    <p>Connect your WhatsApp</p>
+                    {% endif %}
+                </div>
+                <span class="check">
+                    {% if whatsapp_connection %}✓{% else %}→{% endif %}
+                </span>
+            </div>
+
+            <div class="card">
+                <div class="card-icon python">⚡</div>
+                <div>
+                    <h3>Notification Engine</h3>
+                    <p>Active</p>
+                </div>
+                <span class="check">✓</span>
+            </div>
+        </section>
+
+        <!-- GMAIL CONNECTION -->
+        {% if gmail_connection %}
+        <section class="gmail-connected-section">
+            <div class="gmail-connected-content">
+                <div class="gmail-account-info">
+                    <div class="gmail-account-icon">📧</div>
+                    <div class="gmail-account-text">
+                        <h2>Gmail Connected</h2>
+                        <p>Your Gmail account is ready for email monitoring.</p>
+                        <p class="gmail-email">{{ gmail_connection.get("google_email", "Connected Gmail") }}</p>
+                    </div>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+                    <span class="connected-pill">
+                        <span class="dot"></span>
+                        Connected
+                    </span>
+                    <a href="{{ url_for('connect_gmail') }}" class="reconnect-button">↻ Reconnect</a>
+                </div>
+            </div>
+        </section>
+        {% else %}
+        <section class="gmail-connect-section">
+            <div class="gmail-connect-content">
+                <div class="gmail-connect-left">
+                    <div class="gmail-connect-icon">📧</div>
+                    <div>
+                        <h2>Connect Gmail</h2>
+                        <p>Connect your Gmail account to receive email notifications on WhatsApp.</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('connect_gmail') }}" class="gmail-connect-button">
+                    🔗 Connect Gmail
+                </a>
+            </div>
+
+            <div class="gmail-connect-note">
+                🔒 You will be redirected to Google to securely authorize access to your Gmail account.
+                Your password is never shared with this application.
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- WHATSAPP BUSINESS CONNECTION -->
+        {% if whatsapp_connection %}
+        <section class="gmail-connected-section">
+            <div class="gmail-connected-content">
+                <div class="gmail-account-info">
+                    <div class="whatsapp-account-icon">💬</div>
+                    <div class="whatsapp-account-text">
+                        <h2>WhatsApp Business Connected</h2>
+                        <p>Your WhatsApp Business number is connected through Meta Embedded Signup.</p>
+                        <p class="gmail-email">
+                            {{ whatsapp_connection.get("phone_number", "Connected WhatsApp") }}
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+                    <span class="connected-pill">
+                        <span class="dot"></span>
+                        Connected
+                    </span>
+                    <button type="button" class="reconnect-button" onclick="launchWhatsAppSignup()">
+                        ↻ Reconnect
+                    </button>
+                </div>
+            </div>
+        </section>
+        {% else %}
+        <section class="whatsapp-connect-section">
+
+            <div class="whatsapp-connect-content">
+
+                <div class="whatsapp-connect-left">
+                    <div class="whatsapp-connect-icon">💬</div>
+
+                    <div>
+                        <h2>Connect WhatsApp Business</h2>
+                        <p>Securely connect your WhatsApp Business account through Meta.</p>
+                        <p class="whatsapp-help">
+                            You will be redirected to Meta to select or create your WhatsApp Business account.
+                        </p>
+                    </div>
+                </div>
+
+                <button type="button" class="whatsapp-connect-button" id="connectWhatsAppButton"
+                    onclick="launchWhatsAppSignup()">
+                    🔗 Connect WhatsApp Business
+                </button>
+
+            </div>
+
+            <div class="whatsapp-connect-note">
+                🔒 Your Meta password and access token are never entered into this application.
+                Meta handles the secure WhatsApp Business onboarding flow.
+            </div>
+
+            <div id="whatsappSignupStatus" class="whatsapp-signup-status" aria-live="polite"></div>
+
+        </section>
+        {% endif %}
+
+        <!-- STATISTICS -->
+        <section class="stats-cards">
+
+            <div class="stat-card">
+                <div class="stat-icon">📩</div>
+                <div>
+                    <small>Total Notifications</small>
+                    <h2>{{ stats.total }}</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div>
+                    <small>Successfully Sent</small>
+                    <h2>{{ stats.sent }}</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">❌</div>
+                <div>
+                    <small>Failed</small>
+                    <h2>{{ stats.failed }}</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🕒</div>
+                <div>
+                    <small>Last Notification</small>
+                    <h2 class="last-time">{{ stats.last_notification or "No notifications yet" }}</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- AUTOMATION -->
+        <section class="automation">
+            <div class="section-header">
+                <div>
+                    <h2>⚡ Automation</h2>
+                    <p>Email monitoring and WhatsApp notification service</p>
+                </div>
+                <span class="active-badge">ACTIVE</span>
+            </div>
+
+            <div class="automation-status">
+                <span class="status-dot"></span>
+                <strong>Automation is Running Automatically</strong>
+                <span class="active-badge">ACTIVE</span>
+            </div>
+
+            <div class="automation-info">
+                <div class="info-box">
+                    <span>📨</span>
+                    <div>
+                        <small>Email Monitoring</small>
+                        <strong>Every 30 seconds</strong>
+                    </div>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="info-box">
+                    <span>⚡</span>
+                    <div>
+                        <small>Processing</small>
+                        <strong>Notification Engine</strong>
+                    </div>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="info-box">
+                    <span>📱</span>
+                    <div>
+                        <small>Notification</small>
+                        <strong>WhatsApp</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RECENT NOTIFICATIONS -->
+        <section class="activity">
+            <div class="section-header">
+                <div>
+                    <h2>📩 Recent Notifications</h2>
+                    <p>Emails sent to WhatsApp</p>
+                </div>
+            </div>
+
+            {% if notifications %}
+            <div class="notification-list">
+
+                {% for notification in notifications %}
+                <div class="notification-card">
+
+                    <div class="notification-icon">📧</div>
+
+                    <div class="notification-content">
+                        <h3>{{ notification[2] or "No Subject" }}</h3>
+                        <p>From: {{ notification[1] }}</p>
+                        <small>{{ notification[3] }}</small>
+                    </div>
+
+                    <div class="notification-status">
+                        <span>✓</span>
+                        {{ notification[4] }}
+                    </div>
+
+                </div>
+                {% endfor %}
+
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div>📭</div>
+                <h3>No notifications yet</h3>
+                <p>New email notifications will appear here.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- SYSTEM STATUS -->
+        <section class="activity">
+            <div class="section-header">
+                <div>
+                    <h2>📊 System Status</h2>
+                    <p>Current application status</p>
+                </div>
+            </div>
+
+            <div class="status-list">
+
+                <div class="status-row">
+                    <span>Gmail Connection</span>
+                    {% if gmail_connection %}
+                    <span class="connected">● Connected</span>
+                    {% else %}
+                    <span class="connected">● Not Connected</span>
+                    {% endif %}
+                </div>
+
+                <div class="status-row">
+                    <span>WhatsApp Connection</span>
+                    {% if whatsapp_connection %}
+                    <span class="connected">● Connected</span>
+                    {% else %}
+                    <span class="connected">● Not Connected</span>
+                    {% endif %}
+                </div>
+
+                <div class="status-row">
+                    <span>Notification Engine</span>
+                    <span class="connected">● Active</span>
+                </div>
+
+                <div class="status-row">
+                    <span>Monitoring Service</span>
+                    <span class="connected">● Active</span>
+                </div>
+
+            </div>
+        </section>
+
+        <footer>
+            <p>Email to WhatsApp Notification System</p>
+            <span>Final Year Project • Gmail API • WhatsApp Cloud API • Automation</span>
+        </footer>
+
+    </div>
+
+
+    <!-- Meta WhatsApp Embedded Signup -->
+    <script>
+        const META_APP_ID = {{ meta_app_id| tojson }};
+        const META_CONFIG_ID = {{ meta_whatsapp_config_id| tojson }};
+
+        let whatsappSignupActive = false;
+        let whatsappSignupFinished = false;
+        let whatsappSignupData = {
+            access_token: "",
+            code: "",
+            waba_id: "",
+            phone_number_id: "",
+            business_id: ""
+        };
+
+        function setWhatsAppSignupStatus(message, type = "") {
+            const box = document.getElementById("whatsappSignupStatus");
+            if (!box) return;
+            box.textContent = message;
+            box.className = "whatsapp-signup-status show" + (type ? " " + type : "");
+        }
+
+        function resetWhatsAppButton() {
+            const button = document.getElementById("connectWhatsAppButton");
+            if (button) {
+                button.disabled = false;
+                button.textContent = "🔗 Connect WhatsApp Business";
+            }
+        }
+
+        async function completeWhatsAppSignup() {
+            if (whatsappSignupFinished) return;
+
+            // We need the customer token and the WABA ID. In current Meta
+            // Embedded Signup, the token can arrive through FB.login while
+            // the WABA/phone IDs arrive through WA_EMBEDDED_SIGNUP postMessage.
+            if (!whatsappSignupData.access_token && !whatsappSignupData.code) return;
+            if (!whatsappSignupData.waba_id) return;
+
+            whatsappSignupFinished = true;
+            setWhatsAppSignupStatus("Finishing WhatsApp Business connection...", "");
+
+            try {
+                const response = await fetch("{{ url_for('whatsapp_embedded_signup') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify(whatsappSignupData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    setWhatsAppSignupStatus("WhatsApp Business connected successfully.", "success");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 700);
+                    return;
+                }
+
+                whatsappSignupFinished = false;
+                whatsappSignupActive = false;
+                resetWhatsAppButton();
+
+                let message = result.error || "WhatsApp connection failed.";
+                if (typeof message === "object") {
+                    message = message.message || JSON.stringify(message);
+                }
+
+                setWhatsAppSignupStatus(message, "error");
+            } catch (error) {
+                whatsappSignupFinished = false;
+                whatsappSignupActive = false;
+                resetWhatsAppButton();
+                setWhatsAppSignupStatus("Could not contact the backend. Please try again.", "error");
+                console.error("WhatsApp Embedded Signup backend error:", error);
+            }
+        }
+
+        // Meta sends the selected WABA and phone number through this event.
+        // This is the reliable source for the WABA ID in Embedded Signup.
+        window.addEventListener("message", function (event) {
+            if (!event.origin || !event.origin.endsWith("facebook.com")) {
+                return;
+            }
+
+            let data = event.data;
+
+            try {
+                if (typeof data === "string") {
+                    data = JSON.parse(data);
+                }
+            } catch (error) {
+                // Meta can send non-JSON bridge messages; ignore those.
+                return;
+            }
+
+            if (!data || data.type !== "WA_EMBEDDED_SIGNUP") {
+                return;
+            }
+
+            console.log("📩 Meta Embedded Signup event:", data);
+
+            if (data.event === "FINISH" || data.event === "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING") {
+                const signup = data.data || {};
+
+                whatsappSignupData.waba_id = String(signup.waba_id || "").trim();
+                whatsappSignupData.phone_number_id = String(signup.phone_number_id || "").trim();
+                whatsappSignupData.business_id = String(
+                    signup.business_id || signup.businessId || ""
+                ).trim();
+
+                setWhatsAppSignupStatus("Meta completed onboarding. Finishing connection...", "");
+                completeWhatsAppSignup();
+            } else if (data.event === "CANCEL") {
+                whatsappSignupActive = false;
+                whatsappSignupFinished = false;
+                resetWhatsAppButton();
+                const step = data.data && data.data.current_step ? ` (${data.data.current_step})` : "";
+                setWhatsAppSignupStatus("WhatsApp onboarding was cancelled" + step + ".", "error");
+            } else if (data.event === "ERROR") {
+                whatsappSignupActive = false;
+                whatsappSignupFinished = false;
+                resetWhatsAppButton();
+                const errorMessage = data.data && data.data.error_message
+                    ? data.data.error_message
+                    : "Meta reported an Embedded Signup error.";
+                setWhatsAppSignupStatus(errorMessage, "error");
+            }
+        });
+
+        function launchWhatsAppSignup() {
+            if (!META_APP_ID || !META_CONFIG_ID) {
+                setWhatsAppSignupStatus(
+                    "Meta configuration is missing. Check META_APP_ID and META_WHATSAPP_CONFIG_ID in backend/.env.",
+                    "error"
+                );
+                return;
+            }
+
+            if (typeof FB === "undefined") {
+                setWhatsAppSignupStatus("Meta Login is still loading. Please click Connect again.", "error");
+                return;
+            }
+
+            const button = document.getElementById("connectWhatsAppButton");
+            if (button) {
+                button.disabled = true;
+                button.textContent = "Connecting to Meta...";
+            }
+
+            whatsappSignupActive = true;
+            whatsappSignupFinished = false;
+            whatsappSignupData = {
+                access_token: "",
+                code: "",
+                waba_id: "",
+                phone_number_id: "",
+                business_id: ""
+            };
+
+            setWhatsAppSignupStatus("Opening Meta WhatsApp Business onboarding...", "");
+
+            // IMPORTANT: FB.login must run directly from the button click.
+            // Do not await/fetch anything before this call or the browser may
+            // block the Meta popup.
+            FB.login(function (response) {
+                console.log("📩 Meta FB.login response:", response);
+
+                if (response && response.authResponse) {
+                    const auth = response.authResponse;
+
+                    // Current Embedded Signup integrations can expose the
+                    // customer token directly even when response_type=code is
+                    // requested. Prefer it because it avoids redirect_uri
+                    // mismatches during server-side code exchange.
+                    if (auth.accessToken) {
+                        whatsappSignupData.access_token = auth.accessToken;
+                    }
+
+                    if (auth.code) {
+                        whatsappSignupData.code = auth.code;
+                    }
+
+                    completeWhatsAppSignup();
+                    return;
+                }
+
+                // If Meta closes the popup without a successful auth response,
+                // allow the user to try again.
+                whatsappSignupActive = false;
+                whatsappSignupFinished = false;
+                resetWhatsAppButton();
+                setWhatsAppSignupStatus("Meta WhatsApp onboarding was cancelled or not completed.", "error");
+            }, {
+                config_id: META_CONFIG_ID,
+                response_type: "code",
+                override_default_response_type: true,
+                extras: {
+                    setup: {},
+                    sessionInfoVersion: "3"
+                }
+            });
+        }
+
+        // The dashboard should not auto-refresh while the Meta popup is open.
+        // A refresh after success is triggered by completeWhatsAppSignup().
+        setInterval(function () {
+            if (!whatsappSignupActive) {
+                // Intentionally no automatic reload. It can interrupt normal
+                // dashboard use and is not needed for the connection flow.
+            }
+        }, 10000);
+    </script>
+
+</body>
+
+</html>
